@@ -17,7 +17,7 @@ object DiogenesSDK {
 
     private val bannerShown = AtomicBoolean(false)
 
-    private val SDK_VERSION = this.javaClass.`package`.implementationVersion ?: "1.0.7"
+    private val SDK_VERSION = this.javaClass.`package`.implementationVersion ?: "1.0.8"
 
     private const val LIGHT_BLUE = "§3"
     private const val DARK_BLUE = "§9"
@@ -44,22 +44,14 @@ object DiogenesSDK {
 
             // Execute validation
             verify().thenAccept { response ->
-                if (response.message.contains("Old version detected", ignoreCase = true)) {
-                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Old version detected.")
-                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Latest version downloaded, restart your server.")
-
-                    Bukkit.getScheduler().runTask(plugin, Runnable {
-                        Bukkit.getPluginManager().disablePlugin(plugin)
-                    })
-                    return@thenAccept
-                }
-
                 if (response.isAuthorized) {
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
 
+                    // Run success callback on main thread
                     Bukkit.getScheduler().runTask(plugin, onSuccess)
                 } else {
+                    // Failure Logs
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}Plugin will be disabled.")
 
@@ -68,6 +60,7 @@ object DiogenesSDK {
                     })
                 }
             }.exceptionally { ex ->
+                // Error Log
                 Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}ERROR: ${WHITE}Remote server unreachable.")
                 Bukkit.getScheduler().runTask(plugin, Runnable {
                     Bukkit.getPluginManager().disablePlugin(plugin)
