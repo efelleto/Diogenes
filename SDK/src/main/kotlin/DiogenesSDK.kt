@@ -16,9 +16,9 @@ object DiogenesSDK {
     private lateinit var pluginFolder: File
 
     private val bannerShown = AtomicBoolean(false)
-    private const val SDK_VERSION = "1.0.5"
 
-    // Colors (English naming)
+    private val SDK_VERSION = this.javaClass.`package`.implementationVersion ?: "1.0.7"
+
     private const val LIGHT_BLUE = "§3"
     private const val DARK_BLUE = "§9"
     private const val WHITE = "§f"
@@ -27,31 +27,37 @@ object DiogenesSDK {
     private const val GRAY = "§7"
     private const val SEPARATOR = "§8________________________________________________________________________________"
 
-    /**
-     * The master method for developers.
-     * Handles everything: Banner, Verification, Logs, and Auto-Disable.
-     */
-    @JvmStatic
-    fun validate(plugin: Plugin, productId: String, baseUrl: String, onSuccess: Runnable) {
-        // 1. Initialize core data
-        init(productId, baseUrl, plugin.dataFolder)
 
-        // 2. Show unified banner once per server session
+    @JvmStatic
+    fun init(plugin: Plugin, productId: String, baseUrl: String, onSuccess: Runnable) {
+        // Core data
+        this.productId = productId
+        this.baseUrl = baseUrl
+        this.pluginFolder = plugin.dataFolder
+
+        // Show unified banner once per server session
         if (bannerShown.compareAndSet(false, true)) {
             showBanner()
         }
 
-        // 3. Execute validation
+        // Execute validation
         verify().thenAccept { response ->
+            if (response.message.contains("Old version detected", ignoreCase = true)) {
+                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Old version detected.")
+                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Latest version downloaded, restart your server.")
+
+                Bukkit.getScheduler().runTask(plugin, Runnable {
+                    Bukkit.getPluginManager().disablePlugin(plugin)
+                })
+                return@thenAccept
+            }
+
             if (response.isAuthorized) {
-                // Success Logs
                 Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
                 Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
 
-                // Run success callback on main thread
                 Bukkit.getScheduler().runTask(plugin, onSuccess)
             } else {
-                // Failure Logs
                 Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
                 Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}Plugin will be disabled.")
 
@@ -60,19 +66,12 @@ object DiogenesSDK {
                 })
             }
         }.exceptionally { ex ->
-            // Error Log
             Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}ERROR: ${WHITE}Remote server unreachable.")
             Bukkit.getScheduler().runTask(plugin, Runnable {
                 Bukkit.getPluginManager().disablePlugin(plugin)
             })
             null
         }
-    }
-
-    private fun init(productId: String, baseUrl: String, pluginFolder: File) {
-        this.productId = productId
-        this.baseUrl = baseUrl
-        this.pluginFolder = pluginFolder
     }
 
     private fun showBanner() {
@@ -83,7 +82,7 @@ object DiogenesSDK {
             $LIGHT_BLUE    _____^_
             $LIGHT_BLUE   |    |    \
             $LIGHT_BLUE    \   /  ^ |                        $DARK_BLUE§lDiogenes $SDK_VERSION
-            $LIGHT_BLUE   / \_/   0  \                        $GRAY"The most beautiful thing in the world is freedom of speech"
+            $LIGHT_BLUE   / \_/   0  \       $GRAY"The most beautiful thing in the world is freedom of speech"
             $LIGHT_BLUE  /            \
             $LIGHT_BLUE /    ____      0
             $LIGHT_BLUE/      /  \___ _/
