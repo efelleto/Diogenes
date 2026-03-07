@@ -10,12 +10,15 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://hub.spigotmc.org/nexus/content/groups/public/")
 }
 
 dependencies {
     val ktor_version = "3.4.1"
 
     api(project(":Core"))
+
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
