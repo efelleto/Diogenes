@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20-RC2"
     id("org.jetbrains.kotlin.jvm")
+    id("maven-publish")
 }
 
 group = "dev.efelleto"
@@ -25,6 +26,18 @@ tasks.test {
     useJUnitPlatform()
 }
 
+
 kotlin {
     jvmToolchain(21)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+            groupId = "dev.efelleto"
+            artifactId = "Core"
+            version = "1.0-SNAPSHOT"
+        }
+    }
 }

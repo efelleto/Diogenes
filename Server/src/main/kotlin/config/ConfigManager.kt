@@ -67,8 +67,7 @@ object ConfigManager {
         val yaml = Yaml()
         val inputStream = FileInputStream(serverConfigFile)
 
-        val rawData = yaml.load(inputStream)
-        val data = rawData as Map<*, *>
+        val data = yaml.load<Map<String, Any>>(inputStream)
 
         inputStream.close()
 
