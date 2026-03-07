@@ -1,6 +1,7 @@
 plugins {
     id("java")
     kotlin("jvm")
+    id("maven-publish")
 }
 
 group = "dev.efelleto"
@@ -33,6 +34,19 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+            groupId = "dev.efelleto"
+            artifactId = "SDK"
+            version = "1.0-SNAPSHOT"
+        }
+    }
+}
+
+
 kotlin {
     jvmToolchain(21)
 }
