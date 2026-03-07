@@ -2,6 +2,7 @@ plugins {
     id("java")
     kotlin("jvm")
     id("maven-publish")
+    id("com.gradleup.shadow") version "9.3.2"
 }
 
 group = "dev.efelleto"
@@ -32,6 +33,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -47,6 +49,14 @@ publishing {
     }
 }
 
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveClassifier.set("")
+
+    relocate("io.ktor", "dev.efelleto.diogenes.libs.ktor")
+    relocate("com.google.gson", "dev.efelleto.diogenes.libs.gson")
+    relocate("kotlin", "dev.efelleto.diogenes.libs.kotlin")
+    relocate("kotlinx", "dev.efelleto.diogenes.libs.kotlinx")
+}
 
 kotlin {
     jvmToolchain(21)
