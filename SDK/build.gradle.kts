@@ -14,6 +14,8 @@ repositories {
 dependencies {
     val ktor_version = "3.4.1"
 
+    api(project(":Core"))
+
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
@@ -27,7 +29,6 @@ dependencies {
 
     implementation("org.litote.kmongo:kmongo:4.11.0")
 
-    // --- TESTING ---
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
