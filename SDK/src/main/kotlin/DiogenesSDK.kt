@@ -25,53 +25,56 @@ object DiogenesSDK {
     private const val RED = "§c"
     private const val GREEN = "§a"
     private const val GRAY = "§7"
-    private const val SEPARATOR = "§8________________________________________________________________________________"
+    private const val SEPARATOR = "§8__________________________________________________________________________________"
 
 
     @JvmStatic
     fun init(plugin: Plugin, productId: String, baseUrl: String, onSuccess: Runnable) {
-        // Core data
-        this.productId = productId
-        this.baseUrl = baseUrl
-        this.pluginFolder = plugin.dataFolder
+        Bukkit.getScheduler().runTaskLater(plugin, Runnable {
 
-        // Show unified banner once per server session
-        if (bannerShown.compareAndSet(false, true)) {
-            showBanner()
-        }
+            // Core data
+            this.productId = productId
+            this.baseUrl = baseUrl
+            this.pluginFolder = plugin.dataFolder
 
-        // Execute validation
-        verify().thenAccept { response ->
-            if (response.message.contains("Old version detected", ignoreCase = true)) {
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Old version detected.")
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Latest version downloaded, restart your server.")
+            // Show unified banner once per server session
+            if (bannerShown.compareAndSet(false, true)) {
+                showBanner()
+            }
 
+            // Execute validation
+            verify().thenAccept { response ->
+                if (response.message.contains("Old version detected", ignoreCase = true)) {
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Old version detected.")
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}UPDATE: ${WHITE}Latest version downloaded, restart your server.")
+
+                    Bukkit.getScheduler().runTask(plugin, Runnable {
+                        Bukkit.getPluginManager().disablePlugin(plugin)
+                    })
+                    return@thenAccept
+                }
+
+                if (response.isAuthorized) {
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
+
+                    Bukkit.getScheduler().runTask(plugin, onSuccess)
+                } else {
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}Plugin will be disabled.")
+
+                    Bukkit.getScheduler().runTask(plugin, Runnable {
+                        Bukkit.getPluginManager().disablePlugin(plugin)
+                    })
+                }
+            }.exceptionally { ex ->
+                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}ERROR: ${WHITE}Remote server unreachable.")
                 Bukkit.getScheduler().runTask(plugin, Runnable {
                     Bukkit.getPluginManager().disablePlugin(plugin)
                 })
-                return@thenAccept
+                null
             }
-
-            if (response.isAuthorized) {
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
-
-                Bukkit.getScheduler().runTask(plugin, onSuccess)
-            } else {
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}Plugin will be disabled.")
-
-                Bukkit.getScheduler().runTask(plugin, Runnable {
-                    Bukkit.getPluginManager().disablePlugin(plugin)
-                })
-            }
-        }.exceptionally { ex ->
-            Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}ERROR: ${WHITE}Remote server unreachable.")
-            Bukkit.getScheduler().runTask(plugin, Runnable {
-                Bukkit.getPluginManager().disablePlugin(plugin)
-            })
-            null
-        }
+        }, 10L)
     }
 
     private fun showBanner() {
@@ -81,9 +84,9 @@ object DiogenesSDK {
              
             $LIGHT_BLUE    _____^_
             $LIGHT_BLUE   |    |    \
-            $LIGHT_BLUE    \   /  ^ |                        $DARK_BLUE§lDiogenes $SDK_VERSION
-            $LIGHT_BLUE   / \_/   0  \       $GRAY"The most beautiful thing in the world is freedom of speech"
-            $LIGHT_BLUE  /            \
+            $LIGHT_BLUE    \   /  ^ |                        
+            $LIGHT_BLUE   / \_/   0  \                        $DARK_BLUE§lDiogenes $SDK_VERSION
+            $LIGHT_BLUE  /            \      $GRAY"The most beautiful thing in the world is freedom of speech"
             $LIGHT_BLUE /    ____      0
             $LIGHT_BLUE/      /  \___ _/
              
