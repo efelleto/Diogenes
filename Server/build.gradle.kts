@@ -23,6 +23,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("org.yaml:snakeyaml:2.2")
 
+    implementation("org.fusesource.jansi:jansi:2.4.0")
+
     val ktor_version = "2.3.12"
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")

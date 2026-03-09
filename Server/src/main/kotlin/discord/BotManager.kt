@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import dev.efelleto.diogenes.server.Logger
 
 object BotManager {
     fun start(token: String) {
@@ -42,6 +43,6 @@ object BotManager {
                 .addOption(OptionType.STRING, "key", "Your license key (XXXXX-XXXXX...)", true)
         ).queue()
 
-        println("[Discord] Bot is online. All commands updated.")
+        Logger.info("JDA", "Bot is online. All commands updated.")
     }
 }

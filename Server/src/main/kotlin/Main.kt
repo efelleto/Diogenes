@@ -47,6 +47,11 @@ object Logger {
 
 
 fun main() {
+
+    if (System.getProperty("os.name").lowercase().contains("win")) {
+        org.fusesource.jansi.AnsiConsole.systemInstall()
+    }
+
 //  Silence library debug logs (Netty, Mongo, JDA)
     val root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
     root.level = Level.ERROR
