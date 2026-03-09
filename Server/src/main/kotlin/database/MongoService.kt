@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import org.litote.kmongo.* import dev.efelleto.diogenes.core.model.License
 import dev.efelleto.diogenes.core.model.ProductModel
+import dev.efelleto.diogenes.server.Logger
 import dev.efelleto.diogenes.server.discord.command.GuildSettings
 import org.litote.kmongo.eq
 
@@ -32,7 +33,8 @@ object MongoService {
     fun init(uri: String) {
         client = KMongo.createClient(uri)
         database = client.getDatabase("diogenes")
-        println("[Database] Connected to MongoDB via KMongo.")
+
+        Logger.info("DATABASE", "Connection established via KMongo.")
     }
 
     val licenses get() = database.getCollection<License>("licenses")
