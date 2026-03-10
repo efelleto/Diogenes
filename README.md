@@ -20,6 +20,17 @@
     Diogenes is a sovereign, fast, and lightweight open-source licensing ecosystem designed to secure software and plugins. Built with Kotlin, it empowers creators to take full control of their infrastructure, eliminating third-party fees and hidden telemetry.
 </div>
 
+<p align="center">
+    <a href="https://efelleto.github.io/Diogenes/"><strong>📘 Explore the Documentation »</strong></a>
+    <br />
+    <br />
+    <a href="https://efelleto.github.io/Diogenes/docs/intro">Getting Started</a>
+    ·
+    <a href="https://efelleto.github.io/Diogenes/blog">Dev Log</a>
+    ·
+    <a href="https://github.com/efelleto/Diogenes/issues">Report Bug</a>
+  </p>
+
 ## The philosophy
   [Diogenes of Sinope](https://en.wikipedia.org/wiki/Diogenes) was a Greek philosopher who sought **"Autarkeia"** (self-sufficiency). He lived in a barrel, carried a lantern in broad daylight searching for an "honest man," and rejected the corrupt "currency" of his time.
   
