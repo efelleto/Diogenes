@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://efelleto.github.io/Diogenes/blog</id>
+    <title>Diogenes Blog</title>
+    <updated>2026-03-10T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://efelleto.github.io/Diogenes/blog"/>
+    <subtitle>Diogenes Blog</subtitle>
+    <entry>
+        <title type="html"><![CDATA[Welcome to the Diogenes DevLog]]></title>
+        <id>https://efelleto.github.io/Diogenes/blog/welcome-to-diogenes</id>
+        <link href="https://efelleto.github.io/Diogenes/blog/welcome-to-diogenes"/>
+        <updated>2026-03-10T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to the official Diogenes DevLog. This is where we will document the evolution of our licensing ecosystem.]]></summary>
+        <content type="html"><![CDATA[<p>Welcome to the official <strong>Diogenes DevLog</strong>. This is where we will document the evolution of our licensing ecosystem.</p>
+<p>Today marks a major milestone as we've finalized the documentation for the <strong>Server</strong> and <strong>SDK</strong> modules. Our goal is to provide a seamless and secure experience for developers who want to protect their intellectual property without the headache of complex integrations.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="whats-coming-next">What's coming next?<a href="https://efelleto.github.io/Diogenes/blog/welcome-to-diogenes#whats-coming-next" class="hash-link" aria-label="Direct link to What's coming next?" title="Direct link to What's coming next?" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Sinope Layer:</strong> Advanced obfuscation for JAR files.</li>
+</ul>
+<p>Stay tuned for more updates!</p>]]></content>
+        <author>
+            <name>Eduardo Felleto</name>
+            <uri>https://github.com/efelleto</uri>
+        </author>
+        <category label="Announcement" term="Announcement"/>
+        <category label="Release" term="Release"/>
+    </entry>
+</feed>
