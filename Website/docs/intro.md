@@ -44,7 +44,7 @@ Add the JitPack repository and the Diogenes dependency to your `pom.xml`:
 	</repositories>
 
   <dependency>
-	    <groupId>com.github.efelleto.diogenes</groupId>
+	    <groupId>com.github.efelleto.Diogenes</groupId>
 	    <artifactId>SDK</artifactId>
 	    <version>{version}</version>
 	</dependency>
