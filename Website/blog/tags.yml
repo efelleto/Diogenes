@@ -1,0 +1,24 @@
+release:
+  label: Release
+  permalink: /release
+  description: Official version launches and stable builds.
+
+security:
+  label: Security
+  permalink: /security
+  description: Updates regarding Sinope, HWID logic, and protection patches.
+
+backend:
+  label: Backend
+  permalink: /backend
+  description: Updates on the Diogenes Server, MongoDB, and JDA Bot.
+
+sdk:
+  label: SDK
+  permalink: /sdk
+  description: New features, bugfixes, and improvements for the Client SDK.
+
+announcement:
+  label: Announcement
+  permalink: /announcement
+  description: General news and important ecosystem updates.
