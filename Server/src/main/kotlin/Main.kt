@@ -60,7 +60,7 @@ fun main() {
     if (!ConfigManager.setup()) return
     val config = ConfigManager.loadServerConfig()
 
-    showBanner("1.0.14") // visual
+    showBanner("1.0.15") // visual
 
     // Service Initialization
     try {
