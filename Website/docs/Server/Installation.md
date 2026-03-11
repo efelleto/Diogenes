@@ -23,16 +23,17 @@ java -jar DiogenesServer.jar
 ```
 
 :::info
-On the first run, the server will automatically generate a `config.yml` file and then shut down. You must configure this file before the server can start successfully.
+On the first run, the server will automatically generate a `settings.yml` file and then shut down. You must configure this file before the server can start successfully.
 :::
 
 ## Configuration
 
 Open the generated `settings.yml` and fill in your credentials:
-```
-   port: The port where the API will listen (Default: 8080).
-   mongo-uri: Your MongoDB connection string.
-   bot-token: Your Discord Bot token from the Developer Portal.
+
+```yaml
+port: 8080         # The port where the API will listen
+mongo-uri: ""      # Your MongoDB connection string
+bot-token: ""      # Your Discord Bot token from the Developer Portal
 ```
 
 ## Troubleshooting
@@ -56,14 +57,14 @@ Running a backend server can lead to a few common "hiccups." Use this guide to i
 ### 3. MongoDB Connection Timeout
 **Error:** The console hangs at `[INFO] DATABASE: Connecting to MongoDB...` for a long time.
 
-**Fix:** Check if your MongoDB service is running. If you are using **MongoDB Atlas**, ensure your server's IP is whitelisted in the "Network Access" tab. Also, verify if your `mongoUri` includes the correct credentials.
+**Fix:** Check if your MongoDB service is running. If you are using **MongoDB Atlas**, ensure your server's IP is whitelisted in the "Network Access" tab. Also, verify that your `mongo-uri` includes the correct credentials.
 
 ---
 
 ### 4. Invalid Discord Token
 **Error:** `[ERROR] JDA: Starting Discord Bot Manager...` followed by an authentication error.
 
-**Fix:** Your Discord token is likely invalid or has been reset. Go to the [Discord Developer Portal](https://discord.com/developers/applications), reset your **Bot Token**, and update your configuration file.
+**Fix:** Your Discord token is likely invalid or has been reset. Go to the [Discord Developer Portal](https://discord.com/developers/applications), reset your **Bot Token**, and update your `settings.yml`.
 
 ---
 
@@ -75,4 +76,6 @@ Once the server is running and the **Diogenes Banner** appears, you can verify t
 2. **Response:** You should see the message: `[+] Diogenes API is Running!`.
 3. **Verification:** This confirms the **Netty** engine is live and ready to process requests from the SDK.
 
-> **Note on VPS:** If you are running on a remote server, make sure the port is open in your firewall (UFW/Iptables), otherwise the SDK will not be able to connect.
+:::tip[Note on VPS]
+If you are running on a remote server, make sure the port is open in your firewall (UFW/iptables), otherwise the SDK will not be able to connect.
+:::

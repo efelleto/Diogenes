@@ -12,24 +12,24 @@ Always keep your **Diogenes Server** updated to the latest version to ensure you
 
 ## Quick Start
 
-To integrate Diogenes into your project, you'll need to use our SDK provided via [Jitpack](https://jitpack.io/#efelleto/diogenes).
+To integrate Diogenes into your project, you'll need to use our SDK provided via [JitPack](https://jitpack.io/#efelleto/diogenes).
 
 ### 1. Requirements
-- **Java 17** or higher.
+- **Java 8** or higher.
 - A running instance of **MongoDB**.
 - A **Discord Bot Token** (for notifications and management).
 
 ### 2. Dependency Setup
 
-### Gradle
+### Gradle (Kotlin DSL)
 Add the JitPack repository and the Diogenes dependency to your `build.gradle.kts`:
 ```kotlin
 repositories {
-    maven("[https://jitpack.io](https://jitpack.io)")
+    maven("https://jitpack.io")
 }
 
 dependencies {
-    implementation("com.github.efelleto:diogenes:{version}")
+    implementation("com.github.efelleto.Diogenes:SDK:{version}")
 }
 ```
 
@@ -37,16 +37,15 @@ dependencies {
 Add the JitPack repository and the Diogenes dependency to your `pom.xml`:
 ```xml
 <repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
 
-  <dependency>
-	    <groupId>com.github.efelleto.Diogenes</groupId>
-	    <artifactId>SDK</artifactId>
-	    <version>{version}</version>
-	</dependency>
-  ```
-
+<dependency>
+    <groupId>com.github.efelleto.Diogenes</groupId>
+    <artifactId>SDK</artifactId>
+    <version>{version}</version>
+</dependency>
+```
