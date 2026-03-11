@@ -8,17 +8,17 @@ The **Diogenes Bot** is the primary interface for managing your licensing system
 
 ---
 
-### Admin Commands
-These commands are restricted to users with **Administrator** permissions on the server. They are marked with the `「 Admin 」` tag.
+## Admin Commands
+These commands are restricted to users with **Administrator** permissions on the server.
 
 ### /create-product
 **Description:** Registers a new product into the database.
-* **id:** The internal identifier (e.g., `pluginpvp`).
-* **name:** The friendly display name (e.g., `Plugin PvP`).
+- **id:** The internal identifier (e.g., `pluginpvp`).
+- **name:** The friendly display name (e.g., `Plugin PvP`).
 
 ### /create-license
 **Description:** Generates a new unique license key for a specific product.
-* **product:** The ID of the product you want to generate the key for.
+- **product:** The ID of the product you want to generate the key for.
 
 ### /browse-customers
 **Description:** Lists all active customers currently registered in the database and the products they own.
@@ -37,15 +37,9 @@ These commands are available to all users or customers interacting with the bot.
 ### /browse-products
 **Description:** Opens an interactive product management panel where users can see available software and details.
 
-<div style={{display: 'flex', justifyContent: 'center', gap: '10px'}}>
-  <img src="/img/panel.png" alt="Product Panel 1" width="48%" style={{borderRadius: '8px'}} />
-  <img src="/img/panel2.png" alt="Product Panel 2" width="70%" style={{borderRadius: '8px'}} />
-</div>
-
-
 ### /redeem
 **Description:** Allows a customer to activate their license key and bind it to their account/hardware.
-* **key:** The license key received (Format: `XXXXX-XXXXX-XXXXX-XXXXX`).
+- **key:** The license key received (Format: `XXXXX-XXXXX-XXXXX-XXXXX`).
 
 ---
 
@@ -55,7 +49,7 @@ These commands are available to all users or customers interacting with the bot.
 | :--- | :--- | :--- |
 | `/create-product` | Administrator | Register software in the DB |
 | `/create-license` | Administrator | Generate a new serial key |
-| `/browse-customers`| Administrator | List users and their products |
+| `/browse-customers` | Administrator | List users and their products |
 | `/browse-licenses` | Administrator | View all keys in the system |
 | `/audit-setup` | Administrator | Set up security log channel |
 | `/browse-products` | Public | View available products |
