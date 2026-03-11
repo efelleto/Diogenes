@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.efelleto"
-version = "1.0.15"
+version = "1.0.16"
 
 repositories {
     mavenCentral()

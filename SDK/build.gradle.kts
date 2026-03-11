@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.efelleto"
-version = "1.0.15"
+version = "1.0.16"
 
 repositories {
     mavenCentral()
@@ -20,10 +20,15 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
+    // Ktor is bundled and relocated inside the fat jar
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-gson:$ktor_version")
+
+    // Kotlin is excluded from the fat jar  (the server must provide it via a Kotlin plugin)
+    compileOnly(kotlin("stdlib"))
+    compileOnly(kotlin("reflect"))
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
@@ -42,21 +47,22 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveClassifier.set("")
-    mergeServiceFiles() // Keeps kotlin service files.
+    mergeServiceFiles()
 
-    // Relocates Ktor and Gson
+    // Relocate third-party libs to avoid classpath conflicts
     relocate("io.ktor", "dev.efelleto.diogenes.libs.ktor")
     relocate("com.google.gson", "dev.efelleto.diogenes.libs.gson")
+    relocate("io.netty", "dev.efelleto.diogenes.libs.netty")
 
-    // Relocate kotlin but PROTECT the metadata
-    relocate("kotlin", "dev.efelleto.diogenes.libs.kotlin") {
-        exclude("META-INF/kotlin/**")
-        exclude("**/*.kotlin_builtins")
-        exclude("**/*.kotlin_metadata")
-    }
-
-    relocate("kotlinx", "dev.efelleto.diogenes.libs.kotlinx") {
-        exclude("META-INF/kotlinx/**")
+    // Kotlin and kotlinx are NOT relocated -> doing so breaks kotlin-reflect's
+    // internal resource loading (kotlin_builtins), causing ExceptionInInitializerError
+    dependencies {
+        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
+        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8"))
+        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7"))
+        exclude(dependency("org.jetbrains.kotlin:kotlin-reflect"))
+        exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
+        exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm"))
     }
 }
 
