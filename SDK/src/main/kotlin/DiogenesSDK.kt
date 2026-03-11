@@ -17,7 +17,7 @@ object DiogenesSDK {
 
     private val bannerShown = AtomicBoolean(false)
 
-    private val SDK_VERSION = this.javaClass.`package`.implementationVersion ?: "1.0.13"
+    private val SDK_VERSION = this.javaClass.`package`.implementationVersion ?: "1.0.14"
 
     private const val LIGHT_BLUE = "§3"
     private const val DARK_BLUE = "§9"

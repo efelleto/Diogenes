@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.efelleto"
-version = "1.0.13"
+version = "1.0.14"
 
 repositories {
     mavenCentral()
@@ -41,6 +41,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveClassifier.set("")
+
+    mergeServiceFiles()
 
     relocate("io.ktor", "dev.efelleto.diogenes.libs.ktor")
     relocate("com.google.gson", "dev.efelleto.diogenes.libs.gson")
