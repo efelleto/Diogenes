@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.efelleto"
-version = "1.0.16"
+version = "1.0.17"
 
 repositories {
     mavenCentral()
@@ -26,8 +26,11 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-gson:$ktor_version")
 
-    // Kotlin is excluded from the fat jar  (the server must provide it via a Kotlin plugin)
-    compileOnly(kotlin("stdlib"))
+    // Bundled without relocation — server does not provide these
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation(kotlin("stdlib"))
+
+    // Excluded from fat jar — relocation breaks internal resource loading
     compileOnly(kotlin("reflect"))
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
@@ -53,16 +56,12 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     relocate("io.ktor", "dev.efelleto.diogenes.libs.ktor")
     relocate("com.google.gson", "dev.efelleto.diogenes.libs.gson")
     relocate("io.netty", "dev.efelleto.diogenes.libs.netty")
+    relocate("kotlinx.atomicfu", "dev.efelleto.diogenes.libs.atomicfu")
 
     // Kotlin and kotlinx are NOT relocated -> doing so breaks kotlin-reflect's
     // internal resource loading (kotlin_builtins), causing ExceptionInInitializerError
     dependencies {
-        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
-        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8"))
-        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7"))
         exclude(dependency("org.jetbrains.kotlin:kotlin-reflect"))
-        exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
-        exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm"))
     }
 }
 
