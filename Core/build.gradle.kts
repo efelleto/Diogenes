@@ -6,14 +6,13 @@ plugins {
 }
 
 group = "dev.efelleto"
-version = "1.0-SNAPSHOT"
+version = "1.0.13"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
@@ -26,18 +25,23 @@ tasks.test {
     useJUnitPlatform()
 }
 
+// java 8 support
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
-kotlin {
-    jvmToolchain(21)
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+    }
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
-            groupId = "dev.efelleto"
             artifactId = "Core"
-            version = "1.0-SNAPSHOT"
         }
     }
 }
