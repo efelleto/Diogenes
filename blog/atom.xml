@@ -2,10 +2,78 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://efelleto.github.io/Diogenes/blog</id>
     <title>Diogenes Blog</title>
-    <updated>2026-03-10T00:00:00.000Z</updated>
+    <updated>2026-03-11T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://efelleto.github.io/Diogenes/blog"/>
     <subtitle>Diogenes Blog</subtitle>
+    <entry>
+        <title type="html"><![CDATA[DevLog #2 - Java 8 Support, Bug Fixes & Community]]></title>
+        <id>https://efelleto.github.io/Diogenes/blog/devlog-1-0-17</id>
+        <link href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17"/>
+        <updated>2026-03-11T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[After a focused sprint of fixes, refactoring, and documentation work, Diogenes 1.0.17 is live. This update is one of the most important since the project launched, not because of new features, but because of how much more stable, compatible, and accessible the ecosystem became.]]></summary>
+        <content type="html"><![CDATA[<p>After a focused sprint of fixes, refactoring, and documentation work, <strong>Diogenes 1.0.17</strong> is live. This update is one of the most important since the project launched, not because of new features, but because of how much more <strong>stable, compatible, and accessible</strong> the ecosystem became.</p>
+<p>Here's everything that changed.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="-java-8-support">☕ Java 8 Support<a href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17#-java-8-support" class="hash-link" aria-label="Direct link to ☕ Java 8 Support" title="Direct link to ☕ Java 8 Support" translate="no">​</a></h2>
+<p>The biggest change in this release: <strong>the SDK now supports Java 8 and above.</strong></p>
+<p>Previously, the SDK required Java 21, which excluded a significant portion of the Minecraft server ecosystem, especially older 1.8.x servers that still run on legacy JDKs.</p>
+<p>Starting from <code>1.0.17</code>, the SDK is fully compatible with:</p>
+<table><thead><tr><th style="text-align:left">Java Version</th><th style="text-align:left">Supported</th></tr></thead><tbody><tr><td style="text-align:left">Java 8</td><td style="text-align:left">✅</td></tr><tr><td style="text-align:left">Java 11</td><td style="text-align:left">✅</td></tr><tr><td style="text-align:left">Java 17</td><td style="text-align:left">✅</td></tr><tr><td style="text-align:left">Java 21</td><td style="text-align:left">✅</td></tr></tbody></table>
+<p>This change required a complete rework of how the fat JAR is assembled. More on that below:</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="-bug-fixes">🐛 Bug Fixes<a href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17#-bug-fixes" class="hash-link" aria-label="Direct link to 🐛 Bug Fixes" title="Direct link to 🐛 Bug Fixes" translate="no">​</a></h2>
+<p>This release resolves <strong>three critical issues</strong> that were introduced during the Java 8 migration. They appeared sequentially — each fix revealed the next — but all share the same root cause: how Kotlin libraries were being bundled and relocated inside the SDK JAR.</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary><strong>Fix #1 — <code>ExceptionInInitializerError</code> on authentication (1.0.15 → 1.0.16)</strong></summary><div><div class="collapsibleContent_i85q"><p><strong>What happened:</strong>
+The <code>kotlin-reflect</code> library was being relocated inside the fat JAR (e.g. <code>kotlin.*</code> → <code>dev.efelleto.diogenes.libs.kotlin.*</code>). This broke an internal mechanism in <code>kotlin-reflect</code> that loads built-in type metadata from <code>.kotlin_builtins</code> resource files using hardcoded classpath paths.</p><p><strong>Error:</strong></p><div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">Caused by: java.lang.IllegalStateException: Resource not found in classpath:</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">dev/efelleto/diogenes/libs/kotlin/...kotlin_builtins</span><br></span></code></pre></div></div><p><strong>Fix:</strong>
+<code>kotlin-reflect</code> is now fully excluded from the fat JAR. Since it modifies internal JVM behavior and relies on hardcoded resource paths, it cannot be safely relocated.</p></div></div></details>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary><strong>Fix #2 — <code>ClassNotFoundException: kotlinx.coroutines.CoroutineScope</code> (1.0.16 → 1.0.17)</strong></summary><div><div class="collapsibleContent_i85q"><p><strong>What happened:</strong>
+After excluding <code>kotlin-reflect</code>, <code>kotlinx-coroutines</code> was also missing from the JAR. The Ktor CIO engine depends heavily on coroutines, and since the target servers (1.8.8 vanilla) don't provide Kotlin at runtime, the class was simply not found.</p><p><strong>Error:</strong></p><div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">java.lang.ClassNotFoundException: kotlinx.coroutines.CoroutineScope</span><br></span></code></pre></div></div><p><strong>Fix:</strong>
+<code>kotlinx-coroutines-core</code> is now bundled inside the fat JAR without relocation, ensuring it's always available regardless of the server environment.</p></div></div></details>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary><strong>Fix #3 — Banner log pollution on server startup (1.0.17)</strong></summary><div><div class="collapsibleContent_i85q"><p><strong>What happened:</strong>
+The Diogenes ASCII banner was being printed inside a <code>runTaskLater</code> (10 tick delay), which caused Spigot's own startup messages to interleave with the banner output in the console.</p><p><strong>Before:</strong></p><div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">__________________________________________________________________________________</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    _____^_</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">   ...</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">__________________________________________________________________________________</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[INFO]: The server will be available in 4 seconds.   ← intruder</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[INFO]: The server will be available in 3 seconds.   ← intruder</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[INFO]: AUTH: Successfully authenticated.</span><br></span></code></pre></div></div><p><strong>After:</strong></p><div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">__________________________________________________________________________________</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    _____^_</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">   ...</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">__________________________________________________________________________________</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[INFO]: The server will be available in 4 seconds.</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[INFO]: The server will be available in 3 seconds.</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[INFO]: AUTH: Successfully authenticated.</span><br></span></code></pre></div></div><p><strong>Fix:</strong>
+The banner is now printed synchronously during <code>onEnable()</code>, before any async task is scheduled.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="-sdk-build-rework">📦 SDK Build Rework<a href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17#-sdk-build-rework" class="hash-link" aria-label="Direct link to 📦 SDK Build Rework" title="Direct link to 📦 SDK Build Rework" translate="no">​</a></h2>
+<p>The entire fat JAR assembly strategy was redesigned. Here's the final configuration that makes everything work cleanly:</p>
+<table><thead><tr><th style="text-align:left">Library</th><th style="text-align:left">Strategy</th><th style="text-align:left">Reason</th></tr></thead><tbody><tr><td style="text-align:left"><code>kotlin-stdlib</code></td><td style="text-align:left">Bundled, not relocated</td><td style="text-align:left">Server doesn't provide it</td></tr><tr><td style="text-align:left"><code>kotlin-reflect</code></td><td style="text-align:left">Excluded</td><td style="text-align:left">Breaks with any relocation</td></tr><tr><td style="text-align:left"><code>kotlinx-coroutines</code></td><td style="text-align:left">Bundled, not relocated</td><td style="text-align:left">Required by Ktor CIO</td></tr><tr><td style="text-align:left"><code>kotlinx.atomicfu</code></td><td style="text-align:left">Bundled + relocated</td><td style="text-align:left">Transitive dep, may conflict</td></tr><tr><td style="text-align:left"><code>io.ktor</code></td><td style="text-align:left">Bundled + relocated</td><td style="text-align:left">Avoid classpath conflicts</td></tr><tr><td style="text-align:left"><code>com.google.gson</code></td><td style="text-align:left">Bundled + relocated</td><td style="text-align:left">Avoid classpath conflicts</td></tr></tbody></table>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="-documentation-overhaul">📚 Documentation Overhaul<a href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17#-documentation-overhaul" class="hash-link" aria-label="Direct link to 📚 Documentation Overhaul" title="Direct link to 📚 Documentation Overhaul" translate="no">​</a></h2>
+<p>All documentation pages were reviewed and updated to reflect the current state of the project:</p>
+<ul>
+<li class=""><strong>Getting Started:</strong> Java requirement corrected to <strong>Java 8+</strong>, Gradle snippet fixed to proper Kotlin DSL syntax.</li>
+<li class=""><strong>Integration:</strong> Fully rewritten with a parameter reference table, step-by-step authentication flow, and a complete error handling table.</li>
+<li class=""><strong>Installation:</strong> Fixed inconsistency between <code>config.yml</code> and <code>settings.yml</code> references. Configuration block is now a proper YAML example.</li>
+<li class=""><strong>Discord Commands:</strong> Fixed header hierarchy and standardized formatting.</li>
+<li class=""><strong>Security Flow:</strong> Minor formatting cleanup.</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="-community">💬 Community<a href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17#-community" class="hash-link" aria-label="Direct link to 💬 Community" title="Direct link to 💬 Community" translate="no">​</a></h2>
+<p>The <strong>Diogenes Discord server</strong> is being set up. It will be the central hub for:</p>
+<ul>
+<li class="">Getting help with installation and integration</li>
+<li class="">Reporting bugs and suggesting features</li>
+<li class="">Following development updates in real time</li>
+<li class="">Connecting with other developers using the ecosystem</li>
+</ul>
+<p>An invite link will be shared here and in the README as soon as the server is ready. Stay tuned.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="️-whats-next">🗺️ What's Next<a href="https://efelleto.github.io/Diogenes/blog/devlog-1-0-17#%EF%B8%8F-whats-next" class="hash-link" aria-label="Direct link to 🗺️ What's Next" title="Direct link to 🗺️ What's Next" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>Sinope Layer:</strong> JAR obfuscation CLI tool. The groundwork is laid, active development starts next.</li>
+<li class=""><strong>Discord invite:</strong> Community server going live soon.</li>
+</ul>
+<hr>
+<p>Thanks for following the project. If Diogenes has been useful to you, consider leaving a ⭐ on <a href="https://github.com/efelleto/Diogenes" target="_blank" rel="noopener noreferrer" class="">GitHub</a>, it helps a lot.</p>
+<p><em>— Eduardo Felleto</em></p>]]></content>
+        <author>
+            <name>Eduardo Felleto</name>
+            <uri>https://github.com/efelleto</uri>
+        </author>
+        <category label="Announcement" term="Announcement"/>
+        <category label="Release" term="Release"/>
+        <category label="SDK" term="SDK"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Welcome to the Diogenes DevLog]]></title>
         <id>https://efelleto.github.io/Diogenes/blog/welcome-to-diogenes</id>

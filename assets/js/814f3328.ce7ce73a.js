@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkdiogenes_docs=globalThis.webpackChunkdiogenes_docs||[]).push([[472],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Welcome to the Diogenes DevLog","permalink":"/Diogenes/blog/welcome-to-diogenes","unlisted":false,"date":"2026-03-10T00:00:00.000Z"}]}')}}]);
