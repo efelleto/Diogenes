@@ -30,37 +30,33 @@ object DiogenesSDK {
 
     @JvmStatic
     fun init(plugin: Plugin, productId: String, baseUrl: String, onSuccess: Runnable) {
+
+        // Core data
+        this.productId = productId
+        this.baseUrl = baseUrl
+        this.pluginFolder = plugin.dataFolder
+
+        // Show banner immediately — before any async task
+        if (bannerShown.compareAndSet(false, true)) {
+            showBanner()
+        }
+
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-
-            // Core data
-            this.productId = productId
-            this.baseUrl = baseUrl
-            this.pluginFolder = plugin.dataFolder
-
-            // Show unified banner once per server session
-            if (bannerShown.compareAndSet(false, true)) {
-                showBanner()
-            }
 
             // Execute validation
             verify().thenAccept { response ->
                 if (response.isAuthorized) {
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
-
-                    // Run success callback on main thread
                     Bukkit.getScheduler().runTask(plugin, onSuccess)
                 } else {
-                    // Failure Logs
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
                     Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}Plugin will be disabled.")
-
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().disablePlugin(plugin)
                     })
                 }
             }.exceptionally { ex ->
-                // Error Log
                 Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}ERROR: ${WHITE}Remote server unreachable.")
                 Bukkit.getScheduler().runTask(plugin, Runnable {
                     Bukkit.getPluginManager().disablePlugin(plugin)
