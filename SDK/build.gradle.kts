@@ -14,41 +14,28 @@ repositories {
 }
 
 dependencies {
-    val ktor_version = "3.4.1"
+    val ktor_version = "2.3.12"
 
     api(project(":Core"))
 
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
-
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-gson-jvm:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:1.4.14")
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-gson:$ktor_version")
 
-    implementation("org.litote.kmongo:kmongo:4.11.0")
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
-
-tasks.test {
-    useJUnitPlatform()
+// java 8 support
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-            groupId = "dev.efelleto"
-            artifactId = "SDK"
-            version = "1.0-SNAPSHOT"
-        }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
     }
 }
 
@@ -59,8 +46,4 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     relocate("com.google.gson", "dev.efelleto.diogenes.libs.gson")
     relocate("kotlin", "dev.efelleto.diogenes.libs.kotlin")
     relocate("kotlinx", "dev.efelleto.diogenes.libs.kotlinx")
-}
-
-kotlin {
-    jvmToolchain(21)
 }
