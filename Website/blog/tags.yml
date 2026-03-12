@@ -22,3 +22,8 @@ announcement:
   label: Announcement
   permalink: /announcement
   description: General news and important ecosystem updates.
+
+docs:
+  label: Docs
+  permalink: /docs
+  description: Documentation updates, fixes, and new guides.
