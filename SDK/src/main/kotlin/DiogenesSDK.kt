@@ -9,55 +9,55 @@ import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 
-object DiogenesSDK {
+class DiogenesSDK private constructor(
+    private val productId: String,
+    private val baseUrl: String,
+    private val pluginFolder: File
+) {
 
-    private lateinit var productId: String
-    private lateinit var baseUrl: String
-    private lateinit var pluginFolder: File
+    companion object {
+        private val bannerShown = AtomicBoolean(false)
+        private val SDK_VERSION get() = DiogenesSDK::class.java.`package`.implementationVersion ?: "1.0.19"
 
-    private val bannerShown = AtomicBoolean(false)
+        private const val LIGHT_BLUE = "§3"
+        private const val DARK_BLUE = "§9"
+        private const val WHITE = "§f"
+        private const val RED = "§c"
+        private const val GREEN = "§a"
+        private const val GRAY = "§7"
+        private const val SEPARATOR = "§8__________________________________________________________________________________"
 
-    private val SDK_VERSION = this.javaClass.`package`.implementationVersion ?: "1.0.18"
-
-    private const val LIGHT_BLUE = "§3"
-    private const val DARK_BLUE = "§9"
-    private const val WHITE = "§f"
-    private const val RED = "§c"
-    private const val GREEN = "§a"
-    private const val GRAY = "§7"
-    private const val SEPARATOR = "§8__________________________________________________________________________________"
-
-
-    @JvmStatic
-    fun init(plugin: Plugin, productId: String, baseUrl: String, onSuccess: Runnable) {
-
-        // Core data
-        this.productId = productId
-        this.baseUrl = baseUrl
-        this.pluginFolder = plugin.dataFolder
-
-        // Show banner immediately — before any async task
-        if (bannerShown.compareAndSet(false, true)) {
-            showBanner()
+        @JvmStatic
+        fun init(plugin: Plugin, productId: String, baseUrl: String, onSuccess: Runnable) {
+            val instance = DiogenesSDK(productId, baseUrl, plugin.dataFolder)
+            instance.start(plugin, onSuccess)
         }
+    }
 
+    private fun start(plugin: Plugin, onSuccess: Runnable) {
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-
-            // Execute validation
             verify().thenAccept { response ->
+
+                // Banner + result printed together on first plugin
+                if (bannerShown.compareAndSet(false, true)) {
+                    printBannerWithResult(response)
+                } else {
+                    printResult(response)
+                }
+
                 if (response.isAuthorized) {
-                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
-                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
                     Bukkit.getScheduler().runTask(plugin, onSuccess)
                 } else {
-                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
-                    Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}AUTH: ${WHITE}Plugin will be disabled.")
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().disablePlugin(plugin)
                     })
                 }
-            }.exceptionally { ex ->
-                Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${RED}ERROR: ${WHITE}Remote server unreachable.")
+            }.exceptionally {
+                if (bannerShown.compareAndSet(false, true)) {
+                    printBannerWithResult(SDKResponse(false, "Remote server unreachable."))
+                } else {
+                    Bukkit.getConsoleSender().sendMessage("$WHITE[$RED ERROR $WHITE] ${RED}AUTH: ${WHITE}Remote server unreachable.")
+                }
                 Bukkit.getScheduler().runTask(plugin, Runnable {
                     Bukkit.getPluginManager().disablePlugin(plugin)
                 })
@@ -66,7 +66,13 @@ object DiogenesSDK {
         }, 10L)
     }
 
-    private fun showBanner() {
+    private fun printBannerWithResult(response: SDKResponse) {
+        val statusLine = if (response.isAuthorized) {
+            "$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated. ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId"
+        } else {
+            "$WHITE[$RED ERROR $WHITE] ${RED}AUTH: ${WHITE}${response.message}"
+        }
+
         val banner = """
             
             $SEPARATOR
@@ -79,13 +85,23 @@ object DiogenesSDK {
             $LIGHT_BLUE /    ____      0
             $LIGHT_BLUE/      /  \___ _/
              
+            $statusLine
             $SEPARATOR
         """.trimIndent()
 
         Bukkit.getConsoleSender().sendMessage(banner)
     }
 
-    fun verify(): CompletableFuture<SDKResponse> {
+    private fun printResult(response: SDKResponse) {
+        if (response.isAuthorized) {
+            Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}AUTH: ${WHITE}Successfully $GREEN authenticated.")
+            Bukkit.getConsoleSender().sendMessage("$WHITE[$LIGHT_BLUE INFO $WHITE] ${LIGHT_BLUE}PRODUCT: ${WHITE}$productId")
+        } else {
+            Bukkit.getConsoleSender().sendMessage("$WHITE[$RED ERROR $WHITE] ${RED}AUTH: ${WHITE}${response.message}")
+        }
+    }
+
+    private fun verify(): CompletableFuture<SDKResponse> {
         val future = CompletableFuture<SDKResponse>()
 
         if (!pluginFolder.exists()) pluginFolder.mkdirs()
@@ -107,9 +123,7 @@ object DiogenesSDK {
         }
 
         val hwid = SecurityUtils.getHWID()
-        val jarHash = "SINOPE_PENDING"
-
-        val request = LicenseRequest(key, productId, hwid, jarHash)
+        val request = LicenseRequest(key, productId, hwid, "SINOPE_PENDING")
 
         DiogenesClient.requestValidation(baseUrl, request).thenAccept { response ->
             future.complete(SDKResponse(response.isAuthorized, response.message))
