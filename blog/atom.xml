@@ -73,6 +73,50 @@ The banner is now printed synchronously during <code>onEnable()</code>, before a
         <category label="Announcement" term="Announcement"/>
         <category label="Release" term="Release"/>
         <category label="SDK" term="SDK"/>
+        <category label="Docs" term="Docs"/>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[DevLog #3 - Server configuration simplification]]></title>
+        <id>https://efelleto.github.io/Diogenes/blog/devlog-3</id>
+        <link href="https://efelleto.github.io/Diogenes/blog/devlog-3"/>
+        <updated>2026-03-11T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[A small but meaningful quality-of-life release. Diogenes 1.0.18 ships a single focused change: the server configuration system has been completely simplified.]]></summary>
+        <content type="html"><![CDATA[<p>A small but meaningful quality-of-life release. <strong>Diogenes 1.0.18</strong> ships a single focused change: the server configuration system has been completely simplified.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="️-the-old-structure">🗂️ The Old Structure<a href="https://efelleto.github.io/Diogenes/blog/devlog-3#%EF%B8%8F-the-old-structure" class="hash-link" aria-label="Direct link to 🗂️ The Old Structure" title="Direct link to 🗂️ The Old Structure" translate="no">​</a></h2>
+<p>Previously, the server generated a nested folder structure on first run:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">diogenes-config/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── server/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── config.yml</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└── discord/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    └── messages.yml</span><br></span></code></pre></div></div>
+<p>This made sense in theory, but in practice it was unnecessary overhead. The <code>messages.yml</code> file contained Discord embed messages that are better handled at the Sinope layer, and the extra folders added friction for anyone setting up the server quickly.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="-the-new-structure">✅ The New Structure<a href="https://efelleto.github.io/Diogenes/blog/devlog-3#-the-new-structure" class="hash-link" aria-label="Direct link to ✅ The New Structure" title="Direct link to ✅ The New Structure" translate="no">​</a></h2>
+<p>Starting from <code>1.0.18</code>, the server generates a single file at the root, right next to the JAR:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">DiogenesServer.jar</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">config.yml          ← generated here on first run</span><br></span></code></pre></div></div>
+<p>The config file itself was also cleaned up. Two unused fields (<code>admin-role-id</code> and <code>log-channel-id</code>) were removed, and a placeholder for future Sinope webhook integration <strong>will be</strong> added:</p>
+<div class="language-yaml codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-yaml codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token key atrule" style="color:#00a4db">server</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token key atrule" style="color:#00a4db">port</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">8080</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token key atrule" style="color:#00a4db">mongo-uri</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">"mongodb://localhost:27017"</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key atrule" style="color:#00a4db">discord</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token key atrule" style="color:#00a4db">bot-token</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">"YOUR_BOT_TOKEN_HERE"</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="️-first-boot-messages">🖥️ First Boot Messages<a href="https://efelleto.github.io/Diogenes/blog/devlog-3#%EF%B8%8F-first-boot-messages" class="hash-link" aria-label="Direct link to 🖥️ First Boot Messages" title="Direct link to 🖥️ First Boot Messages" translate="no">​</a></h2>
+<p>The first-run console output now follows the same visual standard as the rest of the server logs:</p>
+<p><strong>Before:</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">[!] Config folder created on: /home/user/diogenes-config</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[!] Please fill the information in ./diogenes-config/server/config.yml and restart.</span><br></span></code></pre></div></div>
+<p><strong>After:</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">[ INFO ] CONFIG: File created at: /home/user/config.yml</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">[ INFO ] CONFIG: Please fill config.yml and restart the server.</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="️-migration-note">⚠️ Migration Note<a href="https://efelleto.github.io/Diogenes/blog/devlog-3#%EF%B8%8F-migration-note" class="hash-link" aria-label="Direct link to ⚠️ Migration Note" title="Direct link to ⚠️ Migration Note" translate="no">​</a></h2>
+<p>If you are upgrading from a previous version, your old <code>diogenes-config/server/config.yml</code> will <strong>not</strong> be read automatically. Before restarting with <code>1.0.18</code>:</p>
+<ol>
+<li class="">Copy your <code>mongo-uri</code> and <code>bot-token</code> values from the old file.</li>
+<li class="">Delete the <code>diogenes-config/</code> folder.</li>
+<li class="">Run the new JAR — it will generate a fresh <code>config.yml</code> at the root.</li>
+<li class="">Paste your credentials and restart.</li>
+</ol>
+<hr>
+<p><em>— Eduardo Felleto</em></p>]]></content>
+        <author>
+            <name>Eduardo Felleto</name>
+            <uri>https://github.com/efelleto</uri>
+        </author>
+        <category label="Release" term="Release"/>
+        <category label="Backend" term="Backend"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Welcome to the Diogenes DevLog]]></title>
