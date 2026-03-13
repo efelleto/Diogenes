@@ -166,6 +166,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 <p align="center">
+
   <b>If you found this project useful, please consider giving it a ⭐!</b>
   <br/>
   <i>"The most beautiful thing in the world is freedom of speech." — Diogenes</i>
