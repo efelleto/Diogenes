@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkdiogenes_docs=globalThis.webpackChunkdiogenes_docs||[]).push([[1903],{1912(s){s.exports=JSON.parse('{"blogBasePath":"/Diogenes/blog","blogTitle":"Blog","authorsListPath":"/Diogenes/blog/authors"}')}}]);

@@ -1,0 +1,1 @@
+(globalThis.webpackChunkdiogenes_docs=globalThis.webpackChunkdiogenes_docs||[]).push([[5741],{5741(){}}]);
