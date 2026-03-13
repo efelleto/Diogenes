@@ -35,14 +35,13 @@ DiogenesSDK.init(Plugin plugin, String productId, String baseUrl, Runnable onSuc
 
 ### Java
 
-```java
+```kotlin
 @Override
 public void onEnable() {
-    DiogenesSDK.init(this, "your-product-id", "http://your-server:8080", () -> {
-        isAuthorized.set(true);
-        getServer().getPluginManager().registerEvents(this, this);
-        getLogger().info("Plugin successfully loaded.");
-    });
+    DiogenesSDK.init(this, "my-product-id", "http://your-server:8080", () -> {
+        getServer().getPluginManager().registerEvents(new MyListener(), this);
+        getCommand("mycommand").setExecutor(new MyCommand());
+     });
 }
 ```
 
@@ -53,7 +52,6 @@ override fun onEnable() {
     DiogenesSDK.init(this, "your-product-id", "http://your-server:8080") {
         isAuthorized.set(true)
         server.pluginManager.registerEvents(this, this)
-        logger.info("Plugin successfully loaded.")
     }
 }
 ```

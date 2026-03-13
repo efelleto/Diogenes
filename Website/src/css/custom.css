@@ -28,3 +28,32 @@
   --ifm-color-primary-lightest: #4fa7dd;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+/* Ajuste de altura e espaçamento da Barra de Anúncio */
+[class*='announcementBar'] {
+  padding: 0.20rem 1.5rem; /* Dá espaço em cima, embaixo e nas laterais */
+  font-size: 0.76rem;      /* Ajusta o tamanho da fonte para caber melhor */
+  line-height: 1.4;       /* Melhora o espaçamento entre as duas linhas */
+  height: auto !important; /* Garante que a barra cresça conforme o conteúdo */
+  min-height: 50px;       /* Define uma altura mínima segura */
+}
+
+[class*='announcementBarContent'] {
+  display: block;
+  text-align: center;
+}
+
+/* Torna o botão de fechar (X) branco na barra de anúncio */
+[class*='announcementBarClose'] {
+  color: #fff !important;
+  opacity: 0.8;
+}
+
+[class*='announcementBarClose']:hover {
+  opacity: 1;
+}
+
+/* Caso o Docusaurus use um SVG interno no botão */
+[class*='announcementBarClose'] svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
